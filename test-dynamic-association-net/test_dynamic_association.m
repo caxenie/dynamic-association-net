@@ -11,9 +11,11 @@ fprintf('Simulation started ... \n');
 INPUT_NEURONS = 40;
 % number of neurons in association layer
 ASSOCIATION_NEURONS = 80;
+% enable dynamic visualization of encoding process
+DYN_VISUAL = 1;
 
 % learning rate for feedforward propagation of sensory afferents
-TAU_FF = 0.001;
+TAU_FF = 0.01;
 % learning rate for feedback propagation of association projections
 TAU_FB = 2;
 % learning rate for weight adaptation
@@ -57,12 +59,54 @@ sensory_data = sensory_data_setup('robot_data_jras_paper', 'tracker_data_jras_pa
 MAX_EPOCHS = length(sensory_data.timeunits);
 fprintf('Loaded sensory dataset with %d samples ... \n\n', MAX_EPOCHS);
 
+% visualization init
+figure; set(gcf, 'color', 'w');
+
 %% NETWORK DYNAMICS
 % loop throught training epochs
-while(1)    
+while(1)
     fprintf('------------------- epoch %d --------------------- \n', net_epoch);
     %% INPUT DATA
-    % reset history 
+    
+    % visualize encoding process
+    if(DYN_VISUAL==1)
+        % input
+        subplot(2,3,1);
+        acth1 = plot(input_layer1.A, '-r', 'LineWidth', 2); box off;
+        xlabel('neuron index'); ylabel('activation');
+        subplot(2,3,2);
+        acth2 = plot(input_layer2.A, '-b','LineWidth', 2); box off;
+        xlabel('neuron index'); ylabel('activation');
+        subplot(2,3,3);
+        acth3 = plot(assoc_layer.A, '-k','LineWidth', 2); box off;
+        xlabel('neuron index'); ylabel('activation');
+        % weights
+        subplot(2,3,4);
+        vis_data1 = input_layer1.W(1:INPUT_NEURONS, 1:ASSOCIATION_NEURONS)';
+        acth4 = pcolor(vis_data1); %colorbar;
+        box off; grid off; axis xy; xlabel('input layer 1 - neuron index'); ylabel('association layer - neuron index');
+        subplot(2,3,5);
+        vis_data2 = input_layer2.W(1:INPUT_NEURONS, 1:ASSOCIATION_NEURONS)';
+        acth5 = pcolor(vis_data2); %colorbar;
+        box off; grid off; axis xy; xlabel('input layer 2 - neuron index'); ylabel('association layer - neuron index');
+        
+        % refresh visualization
+        set(acth1, 'YDataSource', 'input_layer1.A');
+        set(acth2, 'YDataSource', 'input_layer2.A');
+        set(acth3, 'YDataSource', 'assoc_layer.A');
+        set(acth4, 'CData', vis_data1);
+        set(acth5, 'CData', vis_data2);
+        
+        refreshdata(acth1, 'caller');
+        refreshdata(acth2, 'caller');
+        refreshdata(acth3, 'caller');
+        refreshdata(acth4, 'caller');
+        refreshdata(acth5, 'caller');
+
+        drawnow;
+    end
+    
+    % reset history
     old_delta_act_assoc = zeros(1, assoc_layer(1).lsize);
     % get one sample from robot data and encode it in population activity
     input_layer1.A = population_encoder(sensory_data.heading.gyro(net_epoch), INPUT_NEURONS);
@@ -70,9 +114,9 @@ while(1)
     
     % input data is normalized in [0,1], so the sum of all neuron activities
     % should be summing up to 1
-     input_layer1.A = input_layer1.A./sum(input_layer1.A);
-     input_layer2.A = input_layer2.A./sum(input_layer2.A);
-   
+%     input_layer1.A = input_layer1.A./sum(input_layer1.A);
+%     input_layer2.A = input_layer2.A./sum(input_layer2.A);    
+
     % iterate the network until it settles
     while(1)
         % -------------------------------------------------------------------------------------------------------------------------
@@ -133,6 +177,7 @@ while(1)
         old_delta_act_assoc = delta_act_assoc;
         net_iter = net_iter + 1;
     end % end of an epoch
+    
     % check if end of simulation
     if(net_epoch==MAX_EPOCHS)
         fprintf('network has learned in %d epochs \n', net_epoch);
@@ -143,23 +188,12 @@ while(1)
 end
 
 %% VISUALIZATION
-% input
-figure; set(gcf, 'color', 'white');
-subplot(1,3,1);
-plot(input_layer1.A); xlabel('Neuron index'); ylabel('Activation input layer 1');
-box off; grid off;
-subplot(1,3,2);
-plot(input_layer2.A); xlabel('Neuron index'); ylabel('Activation input layer 2');
-box off; grid off;
-subplot(1,3,3);
-plot(assoc_layer.A); xlabel('Neuron index'); ylabel('Activation association layer');
-box off; grid off;
-% weights
+% weights after learning
 figure; set(gcf, 'color', 'white');
 subplot(1,2,1);
-imagesc(input_layer1(end).W(1:INPUT_NEURONS, 1:ASSOCIATION_NEURONS)'); colormap; colorbar;
+imagesc(input_layer1.W(1:INPUT_NEURONS, 1:ASSOCIATION_NEURONS)'); colormap; colorbar;
 box off; grid off; axis xy; xlabel('input layer 1'); ylabel('association layer');
 subplot(1,2,2);
-imagesc(input_layer2(end).W(1:INPUT_NEURONS, 1:ASSOCIATION_NEURONS)'); colormap; colorbar;
+imagesc(input_layer2.W(1:INPUT_NEURONS, 1:ASSOCIATION_NEURONS)'); colormap; colorbar;
 box off; grid off; axis xy; xlabel('input layer 2'); ylabel('association layer');
 
