@@ -438,7 +438,7 @@ data.heading.magneto = head_magneto;
 data.heading.odometry = head_odometry;
 data.heading.cam = head_vision;
 % position
-data.pose.cam = pose_vision;
-data.pose.odometry = pose_odometry;
-data.pose.efference = pose_efference;
+data.pose.cam = -pose_vision;
+data.pose.odometry = -pose_odometry;
+data.pose.efference = -pose_efference;
 end

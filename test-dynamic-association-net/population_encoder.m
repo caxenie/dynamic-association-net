@@ -10,7 +10,7 @@
 %   C:      A factor in sec, shows the time duration in which the ...
 %           activity of neurons has been considered
 function R = population_encoder(x, N) % , sig, v, C)
-sig = 0.4;
+sig = 0.5;
 v = 1;
 C = 1;
 K = 20; % in Hz
@@ -20,7 +20,7 @@ for j = 1:1:N
     temp = cos( x - (2*pi*j/N) ) - 1 ;
     % fj is the lamda value for poisson Neuron j
     fj = C * (K*exp(temp / sig^2) + v); 
-%     R(j) = poissrnd(fj);
+    %R(j) = poissrnd(fj);
     R(j) = fj;
 end
 
