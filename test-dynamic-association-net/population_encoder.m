@@ -2,8 +2,8 @@
 %   This function generates a Poisson Noisy pattern of activity
 %   for each neuron in population as Initial tuning curve 
 %   Variables and Argument Description:
-%   x:      input analog value subjected to be decode into ...
-%           ... activity pattern, dimention in (Radians)
+%   x:      input analog value subjected to be encoded into ...
+%           ... activity pattern, dimension in (Radians)
 %   sig:    Defines the spread in radians (Rad)
 %   v:      spontaneous level of activity for each neuron (Hz)
 %   N:      number of neurons in the population

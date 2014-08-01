@@ -10,7 +10,7 @@ fprintf('Simulation started ... \n');
 % number of neurons in each input layer
 INPUT_NEURONS = 40;
 % number of neurons in association layer
-ASSOCIATION_NEURONS = 40;
+ASSOCIATION_NEURONS = 80;
 % enable dynamic visualization of encoding process
 DYN_VISUAL = 1;
 % enable verbose 
@@ -19,9 +19,9 @@ VERBOSE = 0;
 % learning rate for feedforward propagation of sensory afferents
 TAU_FF = 0.01;
 % learning rate for feedback propagation of association projections
-TAU_FB = 0.1;
+TAU_FB = 2;
 % learning rate for weight adaptation
-ETA = 0.001;
+ETA = 0.0005;
 % choose the stability point of the network
 STABLE_POINT = 1e-10;
 
@@ -74,7 +74,7 @@ t_exe_hist = zeros(MAX_EPOCHS, 1);
 %% NETWORK DYNAMICS
 % loop throught training epochs
 while(1)
-    fprintf('------------------- epoch %d --------------------- \n', net_epoch);
+    if (VERBOSE==1), fprintf('------------------- epoch %d --------------------- \n', net_epoch); end;
     %% INPUT DATA
     
     % visualize encoding process
@@ -89,7 +89,7 @@ while(1)
         subplot(2,3,3);
         acth3 = plot(assoc_layer.A, '-k','LineWidth', 2); box off;
         xlabel('neuron index'); ylabel('activation association layer');
-        % weights
+        % weightspopulation_encoderpopulation_encoderpopulation_encoderpopulation_encoderpopulation_encoder
         subplot(2,3,4);
         vis_data1 = input_layer1.W(1:INPUT_NEURONS, 1:ASSOCIATION_NEURONS)';
         acth4 = pcolor(vis_data1); %colorbar;
@@ -211,7 +211,7 @@ while(1)
     % timing the settling time 
     t_elapsed_settling = toc(t_start_settling); 
     t_exe_hist(net_epoch) = t_elapsed_settling;
-    fprintf(' %f s \n', t_elapsed_settling);
+    if (VERBOSE==1), fprintf(' %f s \n', t_elapsed_settling); end;
     %--------------------------
     
     % check if end of simulation
