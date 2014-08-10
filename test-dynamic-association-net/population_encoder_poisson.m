@@ -9,7 +9,7 @@
 %   N:      number of neurons in the population
 %   C:      A factor in sec, shows the time duration in which the ...
 %           activity of neurons has been considered
-function R = population_encoder(x, N) % , sig, v, C)
+function R = population_encoder_poisson(x, N) % , sig, v, C)
 sig = 0.5;
 v = 1;
 C = 1;
